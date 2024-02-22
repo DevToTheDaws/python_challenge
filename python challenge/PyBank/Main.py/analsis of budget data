@@ -1,0 +1,70 @@
+#i tried to do it as a popup instead but couldnt get it to work
+import tkinter 
+from tkinter import messagebox
+
+import os 
+import csv
+csv_file = os.path.join('Pybank', 'Resources', 'budget_data.csv')
+#variables
+total_months = 0
+net_total = 0
+changes = []
+greatest_increase = {"date": "", "amount": float("-inf")}
+greatest_decrease = {"date": "", "amount": float("inf")}
+previous_profit_loss = None
+
+    # Read data from CSV file
+with open(csv_file, 'r') as file:
+        reader = csv.DictReader(file)
+        for row in reader:
+            # total months increment
+            total_months += 1
+            
+            # net total calcuatons 
+            net_total += int(row['Profit/Losses'])
+
+            date_parts = row['Date'].split('-')
+            month = date_parts[0]
+            year = date_parts[1]
+
+            # Calculate changes 
+            if previous_profit_loss is not None:
+                change = int(row['Profit/Losses']) - previous_profit_loss
+                changes.append(change)
+
+                # Check for the greatest increase/decrease
+                if change > greatest_increase["amount"]:
+                    greatest_increase["date"] = row['Date']
+                    greatest_increase["amount"] = change
+                if change < greatest_decrease["amount"]:
+                    greatest_decrease["date"] = row['Date']
+                    greatest_decrease["amount"] = change
+
+            # Update loss
+            previous_profit_loss = int(row['Profit/Losses'])
+
+    # Calculate the average 
+average_change = sum(changes) / len(changes)
+
+print({
+        "Total Months": total_months,
+        "Net Total": net_total,
+        "Average Change": average_change,
+        "Greatest Increase in Profits": greatest_increase,
+        "Greatest Decrease in Profits": greatest_decrease
+    })
+
+
+# Write results to a text file
+
+with open('budgetdata.txt', 'w') as file:
+    file.write(
+        f"Total Months: {total_months}\n"
+        f"Net Total: {net_total}\n"
+        f"Average Change: {average_change}\n"
+        f"Greatest Increase in Profits: {greatest_increase['date']} ({greatest_increase['amount']})\n"
+        f"Greatest Decrease in Profits: {greatest_decrease['date']} ({greatest_decrease['amount']})\n"
+    )
+# i couldnt figure out how to make it appear in the analysis folder
+
+  

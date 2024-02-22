@@ -1,0 +1,51 @@
+import os 
+import csv
+csv_file = os.path.join('PyPoll', 'Resources', 'election_data.csv')
+
+#variables 
+total_votes = 0
+candidates = {}
+#read the csv file
+with open(csv_file, 'r') as file:
+        reader = csv.reader(file)
+        #skip head
+        next(reader)  
+        for row in reader:
+            #  total votes
+            total_votes += 1
+            
+            # Track votes for each candidate
+            candidate_name = row[2] 
+             # Candidate name is in the third column (index 2)
+            if candidate_name not in candidates:
+                candidates[candidate_name] = 0
+            candidates[candidate_name] += 1
+    
+    # Calculate percentage of votes for each candidate
+        for candidate, votes in candidates.items():
+            candidates[candidate] = (votes / total_votes) * 100
+    
+    # Find the winner
+        winner = max(candidates, key=candidates.get)
+    
+    # Print results
+print("Election Results")
+print("-------------------------")
+print(f"Total Votes: {total_votes}")
+print("-------------------------")
+for candidate, votes in candidates.items():
+    print(f"{candidate}: {votes:.3f}% ({candidates[candidate]:.0f})")
+    print("-------------------------")
+    print(f"Winner: {winner}")
+    print("-------------------------")
+    #to a text file 
+with open('pypolldata.txt', 'w') as f:
+        f.write("Election Results\n")
+        f.write("-------------------------\n")
+        f.write(f"Total Votes: {total_votes}\n")
+        f.write("-------------------------\n")
+        for candidate, votes in candidates.items():
+            f.write(f"{candidate}: {votes:.3f}% ({candidates[candidate]:.0f})\n")
+        f.write("-------------------------\n")
+        f.write(f"Winner: {winner}\n")
+        f.write("-------------------------\n")
